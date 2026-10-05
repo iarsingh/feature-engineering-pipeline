@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feature-engineering-pipeline
+  labels:
+    app: feature-engineering-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feature-engineering-pipeline
+  template:
+    metadata:
+      labels:
+        app: feature-engineering-pipeline
+    spec:
+      containers:
+        - name: api
+          image: feature-engineering-pipeline:local
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /v1/readyz
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-engineering-pipeline
+spec:
+  selector:
+    app: feature-engineering-pipeline
+  ports:
+    - port: 80
+      targetPort: 8080
